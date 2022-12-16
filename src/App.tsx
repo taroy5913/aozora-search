@@ -1,24 +1,39 @@
 import { Grid, Link, ListItemText, Paper, Typography } from "@mui/material"
 import Novel from "./interfaces/Novel"
-import rawNovels from "./assets/sample_novels.json"
+import rawNovels from "./assets/index.json"
 import React from "react";
 import TextField from "@mui/material/TextField";
-const allNovels = rawNovels as Novel[];
+import NovelView from "./NovelView";
+// const allNovels = rawNovels as Novel[];
+const allNovels: Novel[] = (rawNovels as Novel[]).map(novel => {
+    return {
+        id: novel.id,
+        card_id: novel.card_id,
+        author: novel.author || "",
+        translator: novel.translator || "",
+        title: novel.title || "",
+        text: novel.text || "",
+        info: novel.info || "",
+        after_text: novel.after_text || "",
+    }
+});
 
 const search = (text: string, limit: number=30): Novel[] => {
+    let res: Novel[] = [];
     if (text.length === 0) {
         // TODO: show popular novels
-        return allNovels.slice(0, limit);
+        for (let i = 0; i < limit; ++i) {
+            res.push(allNovels[Math.floor(Math.random() * allNovels.length)]);
+        }
+        return res;
     }
-    const keywords = text.replace("　", " ").split(" ");
+    console.log("search", text);
     return allNovels.filter(novel => {
-        for (let keyword of keywords) {
-            if (novel.title.includes(text)) {
-                return true;
-            }
-            if (novel.author.includes(text)) {
-                return true;
-            }
+        if (novel.title.includes(text)) {
+            return true;
+        }
+        if (novel.author.includes(text)) {
+            return true;
         }
         return false;
     }).slice(0, limit);
@@ -27,8 +42,11 @@ const search = (text: string, limit: number=30): Novel[] => {
 const App = () => {
     const [isListView, setIsListView] = React.useState<boolean>(true);
     const [query, setQuery] = React.useState<string>("");
-    const [novels, setNovels] = React.useState<Novel[]>(search(query));
+    const [novels, setNovels] = React.useState<Novel[]>([]);
     const [currentNovel, setCurrentNovel] = React.useState<Novel>(novels[0]);
+    React.useEffect(() => {
+        setNovels(search(""));
+    }, []);
     const show = (novel: Novel) => {
         setIsListView(false);
         setCurrentNovel(novel);
@@ -62,7 +80,7 @@ const App = () => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="caption">
-                                        {novel.text.substring(0, 100) + "..."}
+                                        {novel.text + "..."}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -81,20 +99,13 @@ const App = () => {
                 >
                     <Typography>一覧</Typography>
                 </Link>
-                <ListItemText
-                    primary={currentNovel.title}
-                    secondary={currentNovel.author}
+                <NovelView 
+                    id={currentNovel.id}
+                    author={currentNovel.author}
+                    title={currentNovel.title}
                 />
-                {currentNovel.text.split("\n").map(
-                    t => (
-                        <React.Fragment>
-                            <Typography variant="body2">{t}</Typography>
-                            <br />
-                        </React.Fragment>
-                    )
-                )}
             </React.Fragment>
-        );
+        ); 
     }
 }
 

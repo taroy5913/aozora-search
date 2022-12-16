@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && cross-env PUBLIC_URL=https://taroy5913.github.io/ vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d build"
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",

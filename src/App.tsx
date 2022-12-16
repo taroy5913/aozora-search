@@ -1,11 +1,11 @@
-import { Grid, Link, ListItemText, Paper, Typography } from "@mui/material"
+import { Grid, Link, Paper, Typography } from "@mui/material"
 import Novel from "./interfaces/Novel"
-import rawNovels from "./assets/index.json"
+import novelMetaList from "./assets/index.json"
 import React from "react";
 import TextField from "@mui/material/TextField";
 import NovelView from "./NovelView";
-// const allNovels = rawNovels as Novel[];
-const allNovels: Novel[] = (rawNovels as Novel[]).map(novel => {
+
+const allNovels: Novel[] = (novelMetaList as any[]).map(novel => {
     return {
         id: novel.id,
         card_id: novel.card_id,
@@ -13,8 +13,8 @@ const allNovels: Novel[] = (rawNovels as Novel[]).map(novel => {
         translator: novel.translator || "",
         title: novel.title || "",
         text: novel.text || "",
-        info: novel.info || "",
-        after_text: novel.after_text || "",
+        info: "",
+        after_text: "",
     }
 });
 
@@ -65,18 +65,25 @@ const App = () => {
                 />
                 {novels.map((novel: Novel) => {
                     return (
-                        <Paper variant="outlined" sx={{ my: {xs: 3, md: 6}, p: {xs: 1, md: 1}}}>
+                        <Paper key={"novel-"+novel.id} variant="outlined" sx={{ my: {xs: 3, md: 6}, p: {xs: 1, md: 1}}}>
                             <Grid container>
                                 <Grid item xs={6}>
                                     <Link onClick={e => show(novel)}>
                                         <Typography
                                             variant="subtitle1"
                                             color="primary"
-                                        >{novel.title}</Typography>
+                                        >
+                                            {novel.title}
+                                        </Typography>
                                     </Link>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="subtitle1" align="right">{novel.author}</Typography>
+                                    <Typography
+                                        variant="subtitle1"
+                                        align="right"
+                                    >
+                                        {novel.author}
+                                    </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="caption">

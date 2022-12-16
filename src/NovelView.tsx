@@ -1,4 +1,4 @@
-import { Link, ListItemText, Typography } from "@mui/material";
+import { ListItemText, Typography } from "@mui/material";
 import React from "react";
 
 interface Props {
@@ -21,9 +21,12 @@ const NovelView = (props: Props) => {
                 secondary={props.author}
             />
             {text.split("\n").map(
-                t => (
+                (t, i) => (
                     <React.Fragment>
-                        <Typography variant="body2">{t}</Typography>
+                        <Typography
+                            key={"sentence-"+props.id+"-"+i}
+                            variant="body2">{t}
+                        </Typography>
                         <br />
                     </React.Fragment>
                 )

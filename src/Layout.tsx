@@ -13,19 +13,6 @@ const Layout = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <AppBar
-                position="absolute"
-                color="default"
-                elevation={0}
-                sx={{
-                    position: "relative",
-                    borderBottom: (t) => `1px solid $(t.palette.divider)`
-                }}
-            >
-                <Toolbar>
-                    <Typography variant="h6" color="inherit">青空探索</Typography>
-                </Toolbar>
-            </AppBar>
             <Container component="main" maxWidth="sm" sx={{ mb: 4}}>
                 <App />
             </Container>

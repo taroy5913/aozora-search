@@ -1,4 +1,4 @@
-import { Grid, Link, Paper, Typography } from "@mui/material"
+import { Divider, Grid, Link, ListItemText, Paper, Typography } from "@mui/material"
 import Novel from "./interfaces/Novel"
 import rawNovels from "./assets/sample_novels.json"
 import React from "react";
@@ -50,10 +50,17 @@ const App = () => {
                 >
                     <Typography>一覧</Typography>
                 </Link>
-                <Typography variant="subtitle1">{currentNovel.title}</Typography>
-                <Typography variant="subtitle2">{currentNovel.author}</Typography>
+                <ListItemText
+                    primary={currentNovel.title}
+                    secondary={currentNovel.author}
+                />
                 {currentNovel.text.split("\n").map(
-                    t => <Typography variant="body2">{t}</Typography>
+                    t => (
+                        <React.Fragment>
+                            <Typography variant="body2">{t}</Typography>
+                            <br />
+                        </React.Fragment>
+                    )
                 )}
             </React.Fragment>
         );

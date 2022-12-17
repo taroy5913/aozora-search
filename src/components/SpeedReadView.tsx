@@ -4,7 +4,7 @@ import { LocalStorageKeys } from "../interfaces/Preferences";
 
 const split = (text: string, maxChars: number): string[] => {
     let res: string[] = [];
-    text.split("\n").map(t => {
+    text.trim().split("\n").map(t => {
         if (t.length === 0) {
             res.push("");
             return;

@@ -3,7 +3,8 @@ import Novel from "./interfaces/Novel"
 import novelMetaList from "./assets/index.json"
 import React from "react";
 import TextField from "@mui/material/TextField";
-import NovelView from "./NovelView";
+import NovelView from "./components/NovelView";
+import SpeedReadView from "./components/SpeedReadView";
 
 const allNovels: Novel[] = (novelMetaList as any[]).map(novel => {
     return {
@@ -47,6 +48,7 @@ const filterByAuthor = (author: string): Novel[] => {
 
 const App = () => {
     const [isListView, setIsListView] = React.useState<boolean>(true);
+    const [isSpeedReading, setIsSpeedReading] = React.useState<boolean>(true);
     const [query, setQuery] = React.useState<string>("");
     const [novels, setNovels] = React.useState<Novel[]>([]);
     const [currentNovel, setCurrentNovel] = React.useState<Novel>(novels[0]);
@@ -115,22 +117,41 @@ const App = () => {
             </React.Fragment>
         );
     } else {
-        return (
-            <React.Fragment>
-                <Link
-                    component="button"
-                    variant="body2"
-                    onClick={e => setIsListView(true)}
-                >
-                    <Typography>一覧</Typography>
-                </Link>
-                <NovelView 
-                    id={currentNovel.id}
-                    author={currentNovel.author}
-                    title={currentNovel.title}
-                />
-            </React.Fragment>
-        ); 
+        if (isSpeedReading) {
+            return (
+                <React.Fragment>
+                    <Link
+                        component="button"
+                        variant="body2"
+                        onClick={e => setIsListView(true)}
+                    >
+                        <Typography>一覧</Typography>
+                    </Link>
+                    <SpeedReadView
+                        id={currentNovel.id}
+                        author={currentNovel.author}
+                        title={currentNovel.title}
+                    />
+                </React.Fragment>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <Link
+                        component="button"
+                        variant="body2"
+                        onClick={e => setIsListView(true)}
+                    >
+                        <Typography>一覧</Typography>
+                    </Link>
+                    <NovelView 
+                        id={currentNovel.id}
+                        author={currentNovel.author}
+                        title={currentNovel.title}
+                    />
+                </React.Fragment>
+            ); 
+        }
     }
 }
 

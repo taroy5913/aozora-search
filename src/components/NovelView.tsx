@@ -22,9 +22,10 @@ const NovelView = (props: Props) => {
             />
             {text.split("\n").map(
                 (t, i) => (
-                    <React.Fragment>
+                    <React.Fragment
+                    key={"sentence-"+props.id+"-"+i}>
                         <Typography
-                            key={"sentence-"+props.id+"-"+i}
+                            
                             variant="body2">{t}
                         </Typography>
                         <br />

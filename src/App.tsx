@@ -5,6 +5,7 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import NovelView from "./components/NovelView";
 import SpeedReadView from "./components/SpeedReadView";
+import { LocalStorageKeys } from "./interfaces/Preferences";
 
 const allNovels: Novel[] = (novelMetaList as any[]).map(novel => {
     return {
@@ -52,8 +53,16 @@ const App = () => {
     const [query, setQuery] = React.useState<string>("");
     const [novels, setNovels] = React.useState<Novel[]>([]);
     const [currentNovel, setCurrentNovel] = React.useState<Novel>(novels[0]);
+    const [alreadyReadSet, setAlreadyReadSet] = React.useState<Set<string>>(new Set());
     React.useEffect(() => {
         setNovels(search(""));
+        // 既読リスト取得
+        const newAlreadyReadList = JSON.parse(
+            localStorage.getItem(LocalStorageKeys.ALREADY_READ_LIST) || "[]"
+        );
+        const newAlreadyReadSet = new Set<string>(newAlreadyReadList);
+        console.log("既読リスト", newAlreadyReadSet);
+        setAlreadyReadSet(newAlreadyReadSet);
     }, []);
     const show = (novel: Novel) => {
         setIsListView(false);
@@ -66,6 +75,14 @@ const App = () => {
     const handleClickAuthor = (author: string) => {
         setQuery(author);
         setNovels(filterByAuthor(author));
+    }
+    const handleFinishReading = (id: string) => {
+        alreadyReadSet.add(id);
+        console.log(alreadyReadSet);
+        localStorage.setItem(
+            LocalStorageKeys.ALREADY_READ_LIST,
+            JSON.stringify(Array.from(alreadyReadSet))
+        );
     }
     if (isListView) {
         return (
@@ -110,6 +127,13 @@ const App = () => {
                                         {novel.text + "..."}
                                     </Typography>
                                 </Grid>
+                                <Grid item xs={12}>
+                                    {
+                                        alreadyReadSet.has(novel.id) 
+                                        ? <Button variant="outlined" size="small">既読</Button>
+                                        : ""
+                                    }
+                                </Grid>
                             </Grid>
                         </Paper>
                     );
@@ -131,6 +155,8 @@ const App = () => {
                         id={currentNovel.id}
                         author={currentNovel.author}
                         title={currentNovel.title}
+                        alreadyRead={currentNovel.id in alreadyReadSet}
+                        done={() => handleFinishReading(currentNovel.id)}
                     />
                 </React.Fragment>
             );

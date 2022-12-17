@@ -1,4 +1,4 @@
-import { Grid, Link, Paper, Typography } from "@mui/material"
+import { Box, Button, Grid, Link, Paper, Typography } from "@mui/material"
 import Novel from "./interfaces/Novel"
 import novelMetaList from "./assets/index.json"
 import React from "react";
@@ -39,6 +39,12 @@ const search = (text: string, limit: number=30): Novel[] => {
     }).slice(0, limit);
 }
 
+const filterByAuthor = (author: string): Novel[] => {
+    return allNovels.filter(novel => {
+        return (novel.author === author);
+    });
+}
+
 const App = () => {
     const [isListView, setIsListView] = React.useState<boolean>(true);
     const [query, setQuery] = React.useState<string>("");
@@ -54,6 +60,10 @@ const App = () => {
     const handleChange = (text: string) => {
         setQuery(text);
         setNovels(search(text));
+    }
+    const handleClickAuthor = (author: string) => {
+        setQuery(author);
+        setNovels(filterByAuthor(author));
     }
     if (isListView) {
         return (
@@ -78,12 +88,20 @@ const App = () => {
                                     </Link>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography
-                                        variant="subtitle1"
-                                        align="right"
-                                    >
-                                        {novel.author}
-                                    </Typography>
+                                    <Box display="flex" justifyContent="flex-end">
+                                        <Button
+                                            variant="text"
+                                            size="small"
+                                            onClick={e => handleClickAuthor(novel.author)}
+                                        >
+                                            <Typography
+                                                variant="subtitle1"
+                                                align="right"
+                                            >
+                                                {novel.author}
+                                            </Typography>
+                                        </Button>
+                                    </Box>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="caption">

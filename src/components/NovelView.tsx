@@ -25,7 +25,6 @@ const NovelView = (props: Props) => {
                     <React.Fragment
                     key={"sentence-"+props.id+"-"+i}>
                         <Typography
-                            
                             variant="body2">{t}
                         </Typography>
                         <br />

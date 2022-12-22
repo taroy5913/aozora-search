@@ -47,7 +47,7 @@ const filterByAuthor = (author: string): Novel[] => {
 
 const App = () => {
     const [isListView, setIsListView] = React.useState<boolean>(true);
-    const [isSpeedReading, setIsSpeedReading] = React.useState<boolean>(true);
+    const [useSpeedReading, setUseSpeedReading] = React.useState<boolean>(false);
     const [novels, setNovels] = React.useState<Novel[]>([]);
     const [currentNovel, setCurrentNovel] = React.useState<Novel>(novels[0]);
     const [alreadyReadSet, setAlreadyReadSet] = React.useState<Set<string>>(new Set());
@@ -97,7 +97,7 @@ const App = () => {
                     <Typography>一覧</Typography>
                 </Link>
                 {
-                    isSpeedReading
+                    useSpeedReading
                         ? (<SpeedReadView
                             id={currentNovel.id}
                             author={currentNovel.author}
@@ -111,6 +111,13 @@ const App = () => {
                             title={currentNovel.title}
                         />)
                 }
+                <Link
+                    component="button"
+                    variant="body2"
+                    onClick={e => setIsListView(true)}
+                >
+                    <Typography>一覧</Typography>
+                </Link>
             </React.Fragment>
         );
     }

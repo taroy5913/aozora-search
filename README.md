@@ -12,7 +12,7 @@ Please read from here.
     - id: string                
     - title: string             # タイトル
     - author: string            # 作者
-    - text: string              # 本文(冒頭)
+    - text: string              # 本文(冒頭)、partialText?
 
 - NovelStatus(localStorage)
     - novelId: string           # Novel.id

@@ -1,22 +1,20 @@
-import { Box, Button, Grid, Link, Paper, Typography } from "@mui/material"
+import { Link, Typography } from "@mui/material"
 import Novel from "./interfaces/Novel"
-import novelMetaList from "./assets/index.json"
+import rawNovels from "./assets/index.json"
 import React from "react";
-import TextField from "@mui/material/TextField";
 import NovelView from "./components/NovelView";
 import SpeedReadView from "./components/SpeedReadView";
 import { LocalStorageKeys } from "./interfaces/Preferences";
+import NovelListView from "./components/NovelListView";
 
-const allNovels: Novel[] = (novelMetaList as any[]).map(novel => {
+const allNovels: Novel[] = (rawNovels as any[]).map(novel => {
     return {
         id: novel.id,
-        card_id: novel.card_id,
         author: novel.author || "",
         translator: novel.translator || "",
         title: novel.title || "",
         text: novel.text || "",
-        info: "",
-        after_text: "",
+        alreadyRead: false,
     }
 });
 
@@ -50,7 +48,6 @@ const filterByAuthor = (author: string): Novel[] => {
 const App = () => {
     const [isListView, setIsListView] = React.useState<boolean>(true);
     const [isSpeedReading, setIsSpeedReading] = React.useState<boolean>(true);
-    const [query, setQuery] = React.useState<string>("");
     const [novels, setNovels] = React.useState<Novel[]>([]);
     const [currentNovel, setCurrentNovel] = React.useState<Novel>(novels[0]);
     const [alreadyReadSet, setAlreadyReadSet] = React.useState<Set<string>>(new Set());
@@ -69,12 +66,10 @@ const App = () => {
         setCurrentNovel(novel);
     }
     const handleChange = (text: string) => {
-        setQuery(text);
         setNovels(search(text));
     }
-    const handleClickAuthor = (author: string) => {
-        setQuery(author);
-        setNovels(filterByAuthor(author));
+    const handleClickAuthor = (novel: Novel) => {
+        setNovels(filterByAuthor(novel.author));
     }
     const handleFinishReading = (id: string) => {
         alreadyReadSet.add(id);
@@ -85,99 +80,39 @@ const App = () => {
         );
     }
     if (isListView) {
+        return <NovelListView
+            novels={novels} 
+            onAuthorClick={novel => handleClickAuthor(novel)}
+            onTextChange={text => handleChange(text)}
+            onTitleClick={novel => show(novel)}
+        />
+    } else {
         return (
             <React.Fragment>
-                <TextField
-                    placeholder="検索"
-                    value={query}
-                    onChange={e => handleChange(e.target.value)}
-                />
-                {novels.map((novel: Novel) => {
-                    return (
-                        <Paper key={"novel-"+novel.id} variant="outlined" sx={{ my: {xs: 3, md: 6}, p: {xs: 1, md: 1}}}>
-                            <Grid container>
-                                <Grid item xs={6}>
-                                    <Link onClick={e => show(novel)}>
-                                        <Typography
-                                            variant="subtitle1"
-                                            color="primary"
-                                        >
-                                            {novel.title}
-                                        </Typography>
-                                    </Link>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Box display="flex" justifyContent="flex-end">
-                                        <Button
-                                            variant="text"
-                                            size="small"
-                                            onClick={e => handleClickAuthor(novel.author)}
-                                        >
-                                            <Typography
-                                                variant="subtitle1"
-                                                align="right"
-                                            >
-                                                {novel.author}
-                                            </Typography>
-                                        </Button>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Typography variant="caption">
-                                        {novel.text + "..."}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    {
-                                        alreadyReadSet.has(novel.id) 
-                                        ? <Button variant="outlined" size="small">既読</Button>
-                                        : ""
-                                    }
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                    );
-                })}
+                <Link
+                    component="button"
+                    variant="body2"
+                    onClick={e => setIsListView(true)}
+                >
+                    <Typography>一覧</Typography>
+                </Link>
+                {
+                    isSpeedReading
+                        ? (<SpeedReadView
+                            id={currentNovel.id}
+                            author={currentNovel.author}
+                            title={currentNovel.title}
+                            alreadyRead={currentNovel.id in alreadyReadSet}
+                            done={() => handleFinishReading(currentNovel.id)}
+                        />)
+                        : (<NovelView 
+                            id={currentNovel.id}
+                            author={currentNovel.author}
+                            title={currentNovel.title}
+                        />)
+                }
             </React.Fragment>
         );
-    } else {
-        if (isSpeedReading) {
-            return (
-                <React.Fragment>
-                    <Link
-                        component="button"
-                        variant="body2"
-                        onClick={e => setIsListView(true)}
-                    >
-                        <Typography>一覧</Typography>
-                    </Link>
-                    <SpeedReadView
-                        id={currentNovel.id}
-                        author={currentNovel.author}
-                        title={currentNovel.title}
-                        alreadyRead={currentNovel.id in alreadyReadSet}
-                        done={() => handleFinishReading(currentNovel.id)}
-                    />
-                </React.Fragment>
-            );
-        } else {
-            return (
-                <React.Fragment>
-                    <Link
-                        component="button"
-                        variant="body2"
-                        onClick={e => setIsListView(true)}
-                    >
-                        <Typography>一覧</Typography>
-                    </Link>
-                    <NovelView 
-                        id={currentNovel.id}
-                        author={currentNovel.author}
-                        title={currentNovel.title}
-                    />
-                </React.Fragment>
-            ); 
-        }
     }
 }
 

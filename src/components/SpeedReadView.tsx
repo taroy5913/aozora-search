@@ -1,6 +1,5 @@
 import { Button, ListItemText, Typography } from "@mui/material";
 import React from "react";
-import { LocalStorageKeys } from "../interfaces/Preferences";
 
 const split = (text: string, maxChars: number): string[] => {
     let res: string[] = [];
@@ -26,10 +25,10 @@ interface Props {
 const SpeedReadView = (props: Props) => {
     const [index, setIndex] = React.useState<number>(0);
     const [lines, setLines] = React.useState<string[]>([""]);
-    const [speed, setSpeed] = React.useState<number>(3);
+    const [delay, setDelay] = React.useState<number>(120);
     const [reading, setReading] = React.useState<boolean>(false);
     const maxChars = 7;
-    const cpm = speed * 60 * maxChars;
+    const cpm = (1000 / delay) * 60 * maxChars;
     React.useEffect(() => {
         // 本文の取得
         const url = "https://raw.githubusercontent.com/taroy5913/abd/master/f/" + props.id;
@@ -51,11 +50,11 @@ const SpeedReadView = (props: Props) => {
                     setIndex(index + 1);
                 }
             }
-        }, 1000 / speed);
+        }, delay);
         return () => {
             clearTimeout(timer);
         }
-    }, [index, speed, reading]);
+    }, [index, delay, reading]);
     return (
         <React.Fragment>
             <ListItemText
@@ -66,8 +65,8 @@ const SpeedReadView = (props: Props) => {
             <Typography variant="h2">{lines[index]}　</Typography>
             <Typography variant="h2" color="gray">{lines[index+1]}　</Typography>
             <Typography>{Math.floor((100 * (index+1) / lines.length))}%({index+1} / {lines.length})</Typography>
-            <Button onClick={e => setSpeed(0.9 * speed)}>ゆっくり</Button>
-            <Button onClick={e => setSpeed(1.1 * speed)}>はやく</Button>
+            <Button onClick={e => setDelay(1.1 * delay)}>ゆっくり</Button>
+            <Button onClick={e => setDelay(0.9 * delay)}>はやく</Button>
             <Button onClick={e => setReading(!reading)}>{reading ? "ストップ" : "スタート"}</Button>
             <Typography>{Math.floor(cpm)}文字 / 分</Typography>
             <Button onClick={e => props.done()}>既読にする</Button>

@@ -79,6 +79,7 @@ const App = () => {
         setNovels(newNovels);
     }, []);
     const show = (novel: NovelIndex) => {
+        handleFinishReading(novel.id);
         setIsListView(false);
         setCurrentNovel(novel);
     }
@@ -101,12 +102,12 @@ const App = () => {
     }
     if (isListView) {
         return <NovelListView
-                novels={novels} 
-                alreadyReadSet={alreadyReadSet}
-                onAuthorClick={novel => handleClickAuthor(novel)}
-                onTextChange={text => handleChange(text)}
-                onTitleClick={novel => show(novel)}
-            />
+            novels={novels} 
+            alreadyReadSet={alreadyReadSet}
+            onAuthorClick={novel => handleClickAuthor(novel)}
+            onTextChange={text => handleChange(text)}
+            onTitleClick={novel => show(novel)}
+        />
     } else {
         return (
             <React.Fragment>
@@ -127,10 +128,6 @@ const App = () => {
                     onClick={e => setIsListView(true)}>
                     <Typography>一覧</Typography>
                 </Link>
-                <Button
-                    onClick={e => handleFinishReading(currentNovel.id)}>
-                    <Typography>既読にする</Typography>
-                </Button>
             </React.Fragment>
         );
     }

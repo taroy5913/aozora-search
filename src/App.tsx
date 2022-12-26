@@ -1,4 +1,4 @@
-import { Button, Link, Typography } from "@mui/material"
+import { Box, Button, Grid, Link, TextField, Typography } from "@mui/material"
 import NovelIndex from "./interfaces/NovelIndex"
 import { LocalStorageKeys } from "./interfaces/Preferences";
 import rawNovels from "./assets/index.json"
@@ -56,6 +56,7 @@ const getFromLocalStorage = (key:string, defaultValue:any):any => {
 }
 
 const App = () => {
+    const [query, setQuery] = React.useState<string>("");
     const [allNovels, setAllNovels] = React.useState<NovelIndex[]>([]);
     const [isListView, setIsListView] = React.useState<boolean>(true);
     const [novels, setNovels] = React.useState<NovelIndex[]>([]);
@@ -95,9 +96,11 @@ const App = () => {
         setCurrentNovel(novel);
     }
     const handleChange = (text: string) => {
+        setQuery(text);
         setNovels(search(allNovels, text));
     }
     const handleClickAuthor = (novel: NovelIndex) => {
+        setQuery(novel.author);
         setNovels(filterByAuthor(allNovels, novel.author));
     }
     const handleFinishReading = (id: string) => {
@@ -133,7 +136,24 @@ const App = () => {
     if (isListView) {
         return (
             <React.Fragment>
-                <Button onClick={e => showReadLatorList()}>後で読む一覧</Button>
+                <Grid container>
+                    <Grid item xs={6}>
+                        <TextField
+                            placeholder="検索"
+                            value={query}
+                            onChange={e => handleChange(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Box display="flex" justifyContent="flex-end">
+                            <Button onClick={e => showReadLatorList()}>
+                                マイライブラリ
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Grid>
+
+                
                 <NovelListView
                     novels={novels} 
                     alreadyReadSet={alreadyReadSet}
@@ -147,23 +167,23 @@ const App = () => {
     } else {
         return (
             <React.Fragment>
-                <Link
-                    component="button"
-                    variant="body2"
+                <Button
+                    color="primary"
+                    variant="text"
                     onClick={e => handleClickToList()}>
                     <Typography>一覧</Typography>
-                </Link>
+                </Button>
                 <NovelView 
                     id={currentNovel.id}
                     author={currentNovel.author}
                     title={currentNovel.title}
                 />
-                <Link
-                    component="button"
-                    variant="body2"
+                <Button
+                    color="primary"
+                    variant="text"
                     onClick={e => handleClickToList()}>
                     <Typography>一覧</Typography>
-                </Link>
+                </Button>
             </React.Fragment>
         );
     }

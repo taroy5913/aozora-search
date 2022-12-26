@@ -11,17 +11,11 @@ interface Props {
     onClickReadLater: (novel: NovelIndex) => void;
 }
 const NovelListView = (props: Props) => {
-    const [query, setQuery] = React.useState<string>("");
-    const handleTextChange = (text: string) => {
-        setQuery(text);
-        props.onTextChange(text);
-    }
     const handleClickTitle = (novel: NovelIndex) => {
         props.onTitleClick(novel);
     }
     const handleClickAuthor = (novel: NovelIndex) => {
         window.scroll(0, 0);
-        setQuery(novel.author);
         props.onAuthorClick(novel);
     }
     const handleClickReadLater = (novel: NovelIndex) => {
@@ -29,23 +23,18 @@ const NovelListView = (props: Props) => {
     }
     return (
         <React.Fragment>
-            <TextField
-                placeholder="検索"
-                value={query}
-                onChange={e => handleTextChange(e.target.value)}
-            />
             {props.novels.map((novel: NovelIndex) => {
                 return (
                     <Paper key={"novel-"+novel.id} variant="outlined" sx={{ my: {xs: 3, md: 6}, p: {xs: 1, md: 1}}}>
                         <Grid container>
                             <Grid item xs={6}>
-                                <Link onClick={e => handleClickTitle(novel)}>
+                                <Button variant="text" onClick={e => handleClickTitle(novel)}>
                                     <Typography
                                         variant="subtitle1"
                                         color="primary">
                                         {novel.title}
                                     </Typography>
-                                </Link>
+                                </Button>
                             </Grid>
                             <Grid item xs={6}>
                                 <Box display="flex" justifyContent="flex-end">

@@ -64,7 +64,7 @@ const NovelListView = (props: Props) => {
                             <Grid item xs={2}>
                                 {
                                     props.alreadyReadSet.has(novel.id)
-                                        ? <Typography variant="caption">既読</Typography>
+                                        ? <Typography color="gray" variant="caption">既読</Typography>
                                         : null
                                 }
                             </Grid>

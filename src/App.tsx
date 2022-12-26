@@ -118,9 +118,18 @@ const App = () => {
         // 一覧の表示
         setIsListView(true);
     }
+    /**
+     * 後で読むを押したときの処理
+     * 
+     * リストにないなら追加、あるなら除外
+     */
     const handleClickReadLater = (novel: NovelIndex) => {
         let newReadLaterSet = new Set<string>(Array.from(readLaterSet));
-        newReadLaterSet.add(novel.id);
+        if (newReadLaterSet.has(novel.id)) {
+            newReadLaterSet.delete(novel.id);
+        } else {
+            newReadLaterSet.add(novel.id);
+        }
         setReadLaterSet(newReadLaterSet);
         localStorage.setItem(
             LocalStorageKeys.READ_LATER_LIST,

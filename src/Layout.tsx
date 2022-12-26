@@ -1,4 +1,4 @@
-import { AppBar, Container, createTheme, CssBaseline, ThemeProvider, Toolbar, Typography } from "@mui/material"
+import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material"
 import App from "./App";
 
 const Layout = () => {
@@ -13,7 +13,7 @@ const Layout = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Container component="main" maxWidth="sm" sx={{ mb: 4}}>
+            <Container component="main" maxWidth="sm" sx={{ mb: 2}}>
                 <App />
             </Container>
         </ThemeProvider>

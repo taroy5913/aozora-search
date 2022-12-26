@@ -83,7 +83,7 @@ const App = () => {
         const newReadLaterSet = new Set<string>(
             getFromLocalStorage(LocalStorageKeys.READ_LATER_LIST, [])
         );
-        setAlreadyReadSet(newReadLaterSet);
+        setReadLaterSet(newReadLaterSet);
         /**
          * ランダムに本をいくつか抽出
          */
@@ -157,6 +157,7 @@ const App = () => {
                 <NovelListView
                     novels={novels} 
                     alreadyReadSet={alreadyReadSet}
+                    readLaterSet={readLaterSet}
                     onAuthorClick={novel => handleClickAuthor(novel)}
                     onTextChange={text => handleChange(text)}
                     onTitleClick={novel => show(novel)}

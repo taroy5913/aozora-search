@@ -1,10 +1,13 @@
 import { Box, Button, Grid, Link, Paper, TextField, Typography } from "@mui/material";
 import React from "react";
 import NovelIndex from "../interfaces/NovelIndex";
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
 
 interface Props {
     novels: NovelIndex[];
     alreadyReadSet: Set<string>;
+    readLaterSet: Set<string>;
     onTextChange: (text:string) => void;
     onTitleClick: (novel: NovelIndex) => void;
     onAuthorClick: (novel: NovelIndex) => void;
@@ -71,6 +74,11 @@ const NovelListView = (props: Props) => {
                                     <Button
                                         variant="text"
                                         size="small"
+                                        startIcon={
+                                            props.readLaterSet.has(novel.id)
+                                                ? <StarIcon />
+                                                : <StarBorderOutlinedIcon />
+                                        }
                                         onClick={e => handleClickReadLater(novel)}>
                                         後で読む
                                     </Button>

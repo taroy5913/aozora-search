@@ -23,17 +23,26 @@ const prepare = (): NovelIndex[] => {
     });
 }
 
-const search = (allNovels:NovelIndex[], text: string, limit: number=30): NovelIndex[] => {
+const search = (
+    allNovels:NovelIndex[],
+    readLaterSet: Set<string>,
+    text: string,
+    useMyLibrary: boolean,
+    limit: number=30
+): NovelIndex[] => {
     let res: NovelIndex[] = [];
-    if (text.length === 0) {
+    console.log("search", text);
+    let targets = allNovels;
+    if (useMyLibrary) {
+        targets = targets.filter(t => readLaterSet.has(t.id));
+    } else if (text.length === 0) {
         // TODO: show popular novels
         for (let i = 0; i < limit; ++i) {
             res.push(allNovels[Math.floor(Math.random() * allNovels.length)]);
         }
         return res;
     }
-    console.log("search", text);
-    return allNovels.filter(novel => {
+    return targets.filter(novel => {
         if (novel.title.includes(text)) {
             return true;
         }
@@ -63,6 +72,7 @@ const App = () => {
     const [currentNovel, setCurrentNovel] = React.useState<NovelIndex>(novels[0]);
     const [alreadyReadSet, setAlreadyReadSet] = React.useState<Set<string>>(new Set());
     const [readLaterSet, setReadLaterSet] = React.useState<Set<string>>(new Set());
+    const [useMyLibrary, setUseMyLibrary] = React.useState<boolean>(false);
     React.useEffect(() => {
         /**
          * 青空文庫の全インデックスを取得
@@ -87,7 +97,7 @@ const App = () => {
         /**
          * ランダムに本をいくつか抽出
          */
-        const newNovels = search(newAllNovels, "");
+        const newNovels = search(newAllNovels, readLaterSet, "", useMyLibrary);
         setNovels(newNovels);
     }, []);
     const show = (novel: NovelIndex) => {
@@ -97,7 +107,7 @@ const App = () => {
     }
     const handleChange = (text: string) => {
         setQuery(text);
-        setNovels(search(allNovels, text));
+        setNovels(search(allNovels, readLaterSet, text, useMyLibrary));
     }
     const handleClickAuthor = (novel: NovelIndex) => {
         setQuery(novel.author);
@@ -137,9 +147,9 @@ const App = () => {
         );
     }
     const showReadLatorList = () => {
-        const newNovels = allNovels.filter(novel => {
-            return (readLaterSet.has(novel.id));
-        });
+        const newUseMyLibrary = !useMyLibrary;
+        setUseMyLibrary(newUseMyLibrary);
+        const newNovels = search(allNovels, readLaterSet, query, newUseMyLibrary);
         setNovels(newNovels);
     } 
     if (isListView) {
@@ -155,8 +165,10 @@ const App = () => {
                     </Grid>
                     <Grid item xs={6}>
                         <Box display="flex" justifyContent="flex-end">
-                            <Button onClick={e => showReadLatorList()}>
-                                マイライブラリ
+                            <Button
+                                variant={useMyLibrary ? "contained" : "outlined"}
+                                onClick={e => showReadLatorList()}>
+                                後で読む
                             </Button>
                         </Box>
                     </Grid>

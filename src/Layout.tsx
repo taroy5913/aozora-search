@@ -4,7 +4,7 @@ import App from "./App";
 const Layout = () => {
     const theme = createTheme({
         typography: {
-            fontSize: 12
+            fontSize: 15, // 12
         },
         palette: {
             mode: "dark"
@@ -13,7 +13,7 @@ const Layout = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Container component="main" maxWidth="sm" sx={{ mb: 2}}>
+            <Container component="main" maxWidth="sm" sx={{ mb: 0}}>
                 <App />
             </Container>
         </ThemeProvider>

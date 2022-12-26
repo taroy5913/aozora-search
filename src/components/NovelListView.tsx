@@ -8,6 +8,7 @@ interface Props {
     onTextChange: (text:string) => void;
     onTitleClick: (novel: NovelIndex) => void;
     onAuthorClick: (novel: NovelIndex) => void;
+    onClickReadLater: (novel: NovelIndex) => void;
 }
 const NovelListView = (props: Props) => {
     const [query, setQuery] = React.useState<string>("");
@@ -19,8 +20,12 @@ const NovelListView = (props: Props) => {
         props.onTitleClick(novel);
     }
     const handleClickAuthor = (novel: NovelIndex) => {
+        window.scroll(0, 0);
         setQuery(novel.author);
         props.onAuthorClick(novel);
+    }
+    const handleClickReadLater = (novel: NovelIndex) => {
+        props.onClickReadLater(novel);
     }
     return (
         <React.Fragment>
@@ -37,8 +42,7 @@ const NovelListView = (props: Props) => {
                                 <Link onClick={e => handleClickTitle(novel)}>
                                     <Typography
                                         variant="subtitle1"
-                                        color="primary"
-                                    >
+                                        color="primary">
                                         {novel.title}
                                     </Typography>
                                 </Link>
@@ -48,12 +52,11 @@ const NovelListView = (props: Props) => {
                                     <Button
                                         variant="text"
                                         size="small"
-                                        onClick={e => handleClickAuthor(novel)}
-                                    >
+                                        color="success"
+                                        onClick={e => handleClickAuthor(novel)}>
                                         <Typography
-                                            variant="subtitle1"
-                                            align="right"
-                                        >
+                                            variant="subtitle2"
+                                            align="right">
                                             {novel.author}
                                         </Typography>
                                     </Button>
@@ -64,12 +67,25 @@ const NovelListView = (props: Props) => {
                                     {novel.text + "..."}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                        </Grid>
+                        <Grid container>
+                            <Grid item xs={2}>
                                 {
                                     props.alreadyReadSet.has(novel.id)
-                                        ? <Button variant="outlined" size="small">既読</Button>
+                                        ? <Typography variant="caption">既読</Typography>
                                         : null
                                 }
+                            </Grid>
+                            <Grid item xs={6}></Grid>
+                            <Grid item xs={4}>
+                                <Box display="flex" justifyContent="flex-end">
+                                    <Button
+                                        variant="text"
+                                        size="small"
+                                        onClick={e => handleClickReadLater(novel)}>
+                                        後で読む
+                                    </Button>
+                                </Box>
                             </Grid>
                         </Grid>
                     </Paper>

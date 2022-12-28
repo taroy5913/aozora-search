@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Link, TextField, Typography } from "@mui/material"
+import { Box, Button, Grid, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
 import NovelIndex from "./interfaces/NovelIndex"
 import { LocalStorageKeys } from "./interfaces/Preferences";
 import rawNovels from "./assets/index.json"
@@ -6,6 +6,10 @@ import React from "react";
 import NovelView from "./components/NovelView";
 import NovelListView from "./components/NovelListView";
 
+/**
+ * JSONファイルで保存している青空文庫の索引をパース
+ * @returns 
+ */
 const prepare = (): NovelIndex[] => {
     return (rawNovels as {
         id: string;
@@ -64,6 +68,13 @@ const getFromLocalStorage = (key:string, defaultValue:any):any => {
     return v ? JSON.parse(v) : defaultValue;
 }
 
+interface History {
+    novelId: string;
+    title: string;
+    author: string;
+    createdAt: string; // YYYY/MM/DD HH:MM:SS
+}
+
 const App = () => {
     const [query, setQuery] = React.useState<string>("");
     const [allNovels, setAllNovels] = React.useState<NovelIndex[]>([]);
@@ -73,6 +84,8 @@ const App = () => {
     const [alreadyReadSet, setAlreadyReadSet] = React.useState<Set<string>>(new Set());
     const [readLaterSet, setReadLaterSet] = React.useState<Set<string>>(new Set());
     const [useMyLibrary, setUseMyLibrary] = React.useState<boolean>(false);
+    const [useHistory, setUseHistory] = React.useState<boolean>(false);
+    const [historyList, setHistoryList] = React.useState<History[]>([]);
     React.useEffect(() => {
         /**
          * 青空文庫の全インデックスを取得
@@ -99,11 +112,28 @@ const App = () => {
          */
         const newNovels = search(newAllNovels, readLaterSet, "", useMyLibrary);
         setNovels(newNovels);
+        /**
+         * 履歴の取得
+         */
+        const newHistoryList = getFromLocalStorage(LocalStorageKeys.HISTORY_LIST, []);
+        setHistoryList(newHistoryList);
     }, []);
     const show = (novel: NovelIndex) => {
         handleFinishReading(novel.id);
         setIsListView(false);
+        setUseHistory(false);
         setCurrentNovel(novel);
+        const newHistoryList = [{
+            novelId: novel.id,
+            author: novel.author,
+            title: novel.title,
+            createdAt: (new Date()).toLocaleString()
+        }].concat(historyList).slice(0, 100);
+        setHistoryList(newHistoryList);
+        localStorage.setItem(
+            LocalStorageKeys.HISTORY_LIST,
+            JSON.stringify(newHistoryList)
+        );
     }
     const handleChange = (text: string) => {
         setQuery(text);
@@ -127,6 +157,7 @@ const App = () => {
         window.scroll(0, 0);
         // 一覧の表示
         setIsListView(true);
+        setUseHistory(false);
     }
     /**
      * 後で読むを押したときの処理
@@ -151,8 +182,51 @@ const App = () => {
         setUseMyLibrary(newUseMyLibrary);
         const newNovels = search(allNovels, readLaterSet, query, newUseMyLibrary);
         setNovels(newNovels);
-    } 
-    if (isListView) {
+    }
+    if (useHistory) {
+        return (
+            <React.Fragment>
+                <Button
+                    color="primary"
+                    variant="text"
+                    onClick={e => handleClickToList()}>
+                    <Typography>一覧</Typography>
+                </Button>
+                <TableContainer component={Paper}>
+                    <Table size="small">
+                        <TableBody>
+                            {historyList.map((history, i) => {
+                                return (
+                                    <TableRow key={"history-" + i}>
+                                        <TableCell><Typography variant="caption">{history.createdAt}</Typography></TableCell>
+                                        <TableCell>
+                                            <Button
+                                                variant="text"
+                                                onClick={e => show({
+                                                    id: history.novelId,
+                                                    author: history.author,
+                                                    title: history.title,
+                                                    text: "",
+                                                    translator: "",
+                                                })}
+                                                >{history.title}</Button>
+                                        </TableCell>
+                                        <TableCell>{history.author}</TableCell>
+                                    </TableRow>
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Button
+                    color="primary"
+                    variant="text"
+                    onClick={e => handleClickToList()}>
+                    <Typography>一覧</Typography>
+                </Button>
+            </React.Fragment>
+        );
+    } else if (isListView) {
         return (
             <React.Fragment>
                 <Grid container>
@@ -163,7 +237,14 @@ const App = () => {
                             onChange={e => handleChange(e.target.value)}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
+                        <Button
+                            onClick={e => setUseHistory(!useHistory)}
+                        >
+                            履歴
+                        </Button>
+                    </Grid>                    
+                    <Grid item xs={3}>
                         <Box display="flex" justifyContent="flex-end">
                             <Button
                                 variant={useMyLibrary ? "contained" : "outlined"}
@@ -174,7 +255,6 @@ const App = () => {
                     </Grid>
                 </Grid>
 
-                
                 <NovelListView
                     novels={novels} 
                     alreadyReadSet={alreadyReadSet}
